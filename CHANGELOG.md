@@ -6,6 +6,8 @@ Every notable change to Disweep, newest first. The format follows
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-10
+
 ### 🚀 Highlights
 
 - **A desktop app for Windows and macOS** that finds your Discord messages, shows exactly what would go, and deletes them only after a typed confirmation.
