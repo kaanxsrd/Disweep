@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <title>Disweep</title>
+  <defs>
+    <linearGradient id="face" x1="0.08" y1="0.04" x2="0.94" y2="0.98">
+      <stop offset="0" stop-color="#4FB2FF"/>
+      <stop offset="1" stop-color="#8B7CF6"/>
+    </linearGradient>
+  </defs>
+  <rect x="56" y="56" width="912" height="912" rx="216" fill="url(#face)"/>
+  <path fill="#fff" fill-rule="evenodd" d="M404 272h172c132 0 240 107 240 240S708 752 576 752H404V272Zm104 100v280h68c77 0 140-63 140-140s-63-140-140-140h-68Z"/>
+  <g fill="#fff">
+    <rect x="236" y="340" width="128" height="60" rx="30" opacity=".95"/>
+    <rect x="164" y="482" width="200" height="60" rx="30"/>
+    <rect x="268" y="624" width="96" height="60" rx="30" opacity=".9"/>
+  </g>
+</svg>

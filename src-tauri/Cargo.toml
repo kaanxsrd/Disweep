@@ -1,0 +1,51 @@
+[package]
+name = "disweep"
+description = "Sweep your Discord messages. Review it first."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+default-run = "disweep"
+
+[lib]
+name = "disweep_app"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "disweep"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2.7", features = [] }
+
+[dependencies]
+disweep-bot.workspace = true
+disweep-core.workspace = true
+parking_lot.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+tokio-util.workspace = true
+tracing.workspace = true
+tauri = { version = "2.12", features = ["tray-icon", "image-png"] }
+tauri-plugin-autostart = "2.7"
+tauri-plugin-dialog = "2.8"
+tauri-plugin-notification = "2.8"
+tauri-plugin-opener = "2.7"
+tauri-plugin-single-instance = "2.5"
+tauri-plugin-window-state = "2.5"
+ts-rs.workspace = true
+uuid.workspace = true
+keyring = "4.2"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_System_Console"] }
+
+[lints.rust]
+unused_must_use = "deny"
+
+[lints.clippy]
+dbg_macro = "deny"
+todo = "deny"
