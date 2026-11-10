@@ -1,0 +1,54 @@
+[workspace]
+resolver = "3"
+members = ["crates/disweep-core", "crates/disweep-bot", "src-tauri"]
+
+[workspace.package]
+# The one version number for the whole project. scripts/release.ts updates it.
+version = "1.0.0"
+edition = "2024"
+rust-version = "1.92"
+license = "GPL-3.0-only"
+repository = "https://github.com/kaanxsrd/Disweep"
+authors = ["Vante"]
+
+[workspace.dependencies]
+disweep-core = { path = "crates/disweep-core" }
+disweep-bot = { path = "crates/disweep-bot" }
+
+async-trait = "0.1"
+bytes = "1"
+chrono = { version = "0.4", default-features = false, features = ["clock", "serde", "std"] }
+futures = "0.3"
+parking_lot = "0.13"
+regex = "1.13"
+reqwest = { version = "0.13", default-features = false, features = ["charset", "gzip", "http2", "json", "rustls-no-provider", "system-proxy"] }
+rusqlite = { version = "0.41", features = ["bundled"] }
+rustls = { version = "0.23", default-features = false, features = ["logging", "ring", "std", "tls12"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tokio = { version = "1.54", features = ["fs", "macros", "rt-multi-thread", "sync", "time"] }
+tokio-util = "0.7"
+tracing = "0.1"
+ts-rs = "12"
+twilight-gateway = { version = "0.18", default-features = false, features = ["rustls-platform-verifier"] }
+twilight-model = "0.18"
+uuid = { version = "1", features = ["serde", "v4"] }
+zeroize = "1.9"
+zip = { version = "9", default-features = false, features = ["deflate"] }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+unused_must_use = "deny"
+
+[workspace.lints.clippy]
+dbg_macro = "deny"
+todo = "deny"
+unwrap_used = "warn"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

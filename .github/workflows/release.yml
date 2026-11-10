@@ -1,0 +1,122 @@
+name: Release
+
+# Pushing a tag such as v1.2.0 builds every platform and publishes a GitHub Release, then updates
+# the Homebrew tap and Scoop bucket. Create the tag with scripts/release.ts.
+#
+# Repository secrets used here:
+#   secrets.HOMEBREW_TAP_TOKEN  push access to the homebrew-tap repository (optional)
+#   secrets.SCOOP_BUCKET_TOKEN  push access to the scoop-bucket repository (optional)
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: bun install --frozen-lockfile
+      - run: bun scripts/release.ts check "$GITHUB_REF_NAME"
+      - run: bun run vitest run
+      - run: bun run build:ui
+      - run: cargo test --workspace
+
+  build:
+    name: Build on ${{ matrix.os }}
+    needs: verify
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-latest
+          - windows-11-arm
+          - macos-15
+          - macos-15-intel
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: bun install --frozen-lockfile
+      - id: build
+        run: bun scripts/build.ts
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ matrix.os }}
+          path: ${{ steps.build.outputs.folder }}
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+      SCOOP_BUCKET_TOKEN: ${{ secrets.SCOOP_BUCKET_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/download-artifact@v8
+        with:
+          path: release-assets
+          pattern: release-*
+          merge-multiple: true
+      - name: Write checksums
+        working-directory: release-assets
+        run: sha256sum disweep_* | tee checksums.txt
+      - run: bun scripts/release.ts notes "$GITHUB_REF_NAME" > release-notes.md
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create "$GITHUB_REF_NAME" release-assets/*
+          --verify-tag
+          --title "Disweep ${GITHUB_REF_NAME#v}"
+          --notes-file release-notes.md
+      - name: Render package manager manifests
+        run: bun scripts/package-managers.ts "${GITHUB_REF_NAME#v}" release-assets/checksums.txt manifests
+      - name: Update the Homebrew tap
+        if: env.HOMEBREW_TAP_TOKEN != ''
+        run: |
+          git clone --depth 1 "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/${GITHUB_REPOSITORY_OWNER}/homebrew-tap.git" tap
+          cp manifests/disweep.rb tap/Casks/disweep.rb
+          cd tap
+          git config user.name "$GITHUB_REPOSITORY_OWNER"
+          git config user.email "${GITHUB_REPOSITORY_OWNER_ID}+${GITHUB_REPOSITORY_OWNER}@users.noreply.github.com"
+          git add Casks/disweep.rb
+          git commit -m "disweep ${GITHUB_REF_NAME#v}"
+          git push
+      - name: Update the Scoop bucket
+        if: env.SCOOP_BUCKET_TOKEN != ''
+        run: |
+          git clone --depth 1 "https://x-access-token:${SCOOP_BUCKET_TOKEN}@github.com/${GITHUB_REPOSITORY_OWNER}/scoop-bucket.git" bucket
+          cp manifests/disweep.json bucket/disweep.json
+          cd bucket
+          git config user.name "$GITHUB_REPOSITORY_OWNER"
+          git config user.email "${GITHUB_REPOSITORY_OWNER_ID}+${GITHUB_REPOSITORY_OWNER}@users.noreply.github.com"
+          git add disweep.json
+          git commit -m "disweep ${GITHUB_REF_NAME#v}"
+          git push

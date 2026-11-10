@@ -1,0 +1,195 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist/index.css";
+@import "@fontsource-variable/geist-mono/index.css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "Cascadia Code", Menlo, monospace;
+
+  --color-canvas: var(--canvas);
+  --color-panel: var(--panel);
+  --color-raised: var(--raised);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-soft: var(--soft);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-violet: var(--violet);
+  --color-good: var(--good);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --color-chart: var(--chart);
+}
+
+:root {
+  --canvas: #f5f6fa;
+  --panel: #ffffff;
+  --raised: #eef0f6;
+  --line: #e1e4ed;
+  --ink: #12151d;
+  --soft: #475063;
+  --faint: #667085;
+  --accent: #2479e0;
+  --violet: #6f5fe8;
+  --good: #0f8354;
+  --warn: #9a6104;
+  --bad: #d0363f;
+  --chart: #2f81e7;
+  --glow: rgb(47 129 231 / 0.09);
+  --dots: rgb(18 21 29 / 0.05);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --canvas: #07090f;
+  --panel: #0e1118;
+  --raised: #171b25;
+  --line: #222734;
+  --ink: #eef0f6;
+  --soft: #a7afc0;
+  --faint: #7f889c;
+  --accent: #57b0ff;
+  --violet: #8b7cf6;
+  --good: #3dd68c;
+  --warn: #f2b24a;
+  --bad: #f4616a;
+  --chart: #4593e8;
+  --glow: rgb(46 110 214 / 0.16);
+  --dots: rgb(255 255 255 / 0.035);
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* The faint navy wash and dot grid behind everything, as on the banner. */
+#root::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 520px at 8% -8%, var(--glow), transparent 70%),
+    radial-gradient(circle at center, var(--dots) 1px, transparent 1.2px) 0 0 / 22px 22px;
+}
+
+#root {
+  position: relative;
+}
+
+input,
+textarea,
+.selectable {
+  user-select: text;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.gradient-text {
+  background: linear-gradient(100deg, #57b0ff, #8b7cf6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.gradient-fill {
+  background: linear-gradient(90deg, #4fa8ff, #8b7cf6);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Streamer mode hides anything that identifies a person or conversation. */
+:root[data-streamer="true"] .sensitive {
+  filter: blur(7px);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 0.22s ease-out both;
+}
+
+@keyframes sweep-shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(260%);
+  }
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.32), transparent);
+  animation: sweep-shimmer 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: this preference has to beat every other rule. */
+    animation: none !important;
+    /* biome-ignore lint/complexity/noImportantStyles: this preference has to beat every other rule. */
+    transition: none !important;
+  }
+}

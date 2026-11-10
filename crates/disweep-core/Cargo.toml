@@ -1,0 +1,39 @@
+[package]
+name = "disweep-core"
+description = "The Disweep sweep engine: Discord API client, rate limiting, scanning, deletion and persistence."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+async-trait.workspace = true
+bytes.workspace = true
+chrono.workspace = true
+futures.workspace = true
+parking_lot.workspace = true
+regex.workspace = true
+reqwest.workspace = true
+rusqlite.workspace = true
+rustls.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tokio-util.workspace = true
+tracing.workspace = true
+ts-rs.workspace = true
+uuid.workspace = true
+zeroize.workspace = true
+zip.workspace = true
+
+[dev-dependencies]
+zip = { workspace = true }
+tempfile = "3"
+tokio = { workspace = true, features = ["test-util"] }
+wiremock = "0.6"

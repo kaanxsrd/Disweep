@@ -1,0 +1,57 @@
+{
+  "name": "disweep",
+  "private": true,
+  "description": "Sweep your Discord messages. Review it first.",
+  "license": "GPL-3.0-only",
+  "type": "module",
+  "packageManager": "bun@1.4.2",
+  "engines": {
+    "bun": ">=1.3"
+  },
+  "scripts": {
+    "dev": "tauri dev",
+    "dev:ui": "vite",
+    "build": "tauri build",
+    "build:ui": "tsc -b && vite build",
+    "demo": "tauri dev -- -- --demo",
+    "lint": "biome lint .",
+    "format": "biome format --write . && cargo fmt --all",
+    "typecheck": "tsc -b",
+    "test": "bun run test:ui && bun run test:rust",
+    "test:ui": "vitest run",
+    "test:rust": "cargo test --workspace",
+    "bindings": "bun scripts/bindings.ts",
+    "check": "bun scripts/check.ts",
+    "tauri": "tauri",
+    "test:e2e": "bun tests/e2e/demo.ts"
+  },
+  "dependencies": {
+    "@fontsource-variable/geist": "5.3.0",
+    "@fontsource-variable/geist-mono": "5.3.0",
+    "@tanstack/react-query": "5.107.1",
+    "@tanstack/react-virtual": "3.14.26",
+    "@tauri-apps/api": "2.12.4",
+    "clsx": "2.1.1",
+    "lucide-react": "1.71.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "sonner": "2.0.8",
+    "tailwind-merge": "3.7.0",
+    "zustand": "5.1.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.6",
+    "@tailwindcss/vite": "4.3.5",
+    "@tauri-apps/cli": "2.12.4",
+    "@types/bun": "1.3.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.3.0",
+    "playwright-core": "1.65.0",
+    "sharp": "0.35.5",
+    "tailwindcss": "4.3.5",
+    "typescript": "7.0.2",
+    "vite": "8.3.7",
+    "vitest": "5.1.0"
+  }
+}
